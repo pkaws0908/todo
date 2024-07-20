@@ -18,16 +18,7 @@ stages:
              backendAzureRmResourceGroupName: 'kkp-rg'
              backendAzureRmStorageAccountName: 'kpstr123'
              backendAzureRmContainerName: 'kpctr'
-             backendAzureRmKey: '- task: TerraformTaskV4@4
-  inputs:
-    provider: 'azurerm'
-    command: 'init'
-    workingDirectory: '$(System.DefaultWorkingDirectory)/env/dev'
-    backendServiceArm: 'pkserviceconection'
-    backendAzureRmResourceGroupName: 'kkp-rg'
-    backendAzureRmStorageAccountName: 'kpstr123'
-    backendAzureRmContainerName: 'kpctr'
-    backendAzureRmKey: 'dev.terraform.tfstate''
+             backendAzureRmKey: 'dev.terraform.tfstate''     
 
          - task: TerraformTaskV4@4
            displayName: "terraform plan"
