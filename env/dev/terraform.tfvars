@@ -15,7 +15,7 @@ module_var = {
 module_sa ={
 
     SA1={
-      name= "devsa"
+      name= "devsapk001k"
       rg_name = "rg_proj_alpha"
       location = "west us"
       account_tier = "Standard"
