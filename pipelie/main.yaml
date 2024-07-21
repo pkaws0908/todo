@@ -1,67 +1,71 @@
-trigger: none
+name: infrapipeline
+trigger:
+ branches:
+   include:
+     - master
+ paths:
+   include:
+     - /env/dev
 
 pool: default
-stages:
- - stage: teraforminitandplan
-   displayName: terraform init and plan
-   jobs:
-       - job: init and planjob
-         displayName: init and plan job
-         steps:
-         - task: TerraformTaskV4@4
-           displayName: "terraform init"
-           inputs:
-             provider: 'azurerm'
-             command: 'init'
-             workingDirectory: '$(System.DefaultWorkingDirectory)/env/dev'
-             backendServiceArm: 'pkserviceconection'
-             backendAzureRmResourceGroupName: 'kkp-rg'
-             backendAzureRmStorageAccountName: 'kpstr123'
-             backendAzureRmContainerName: 'kpctr'
-             backendAzureRmKey: 'dev.terraform.tfstate''     
-
-         - task: TerraformTaskV4@4
-           displayName: "terraform plan"
-           inputs:
-             provider: 'azurerm'
-             command: 'plan'
-             workingDirectory: '$(System.DefaultWorkingDirectory)/env/dev'
-             environmentServiceNameAzureRM: 'pkserviceconection'
- - stage: terraformapply
-   displayName: terraform apply
-   jobs:
-     - job: manual approval job
-       displayName: namual approval 
-       pool: server
-       steps:
-       - task: ManualValidation@1
-         inputs:
-           notifyUsers: 'pkdg@pk.com'
-           instructions: 'Kindly validate and continue'
-     - job: terraforminit
-       displayName: terrafoem init
-       pool: default
-       steps:
-       - task: TerraformTaskV4@4
-         inputs:
-           provider: 'azurerm'
-           command: 'init'
-           workingDirectory: '$(System.DefaultWorkingDirectory)/env/dev'
-           backendServiceArm: 'pkserviceconection'
-           backendAzureRmResourceGroupName: 'kkp-rg'
-           backendAzureRmStorageAccountName: 'kpstr123'
-           backendAzureRmContainerName: 'kpctr'
-           backendAzureRmKey: 'dev.terraform.tfstate'
-       - task: TerraformTaskV4@4
-         inputs:
-           provider: 'azurerm'
-           command: 'apply'
-           workingDirectory: '$(System.DefaultWorkingDirectory)/env/dev'
-           commandOptions: '-auto-approve'
-           environmentServiceNameAzureRM: 'pkserviceconection'
- 
+stages: 
+  - stage: 
+    displayName: terraforminit
 
 
-     
-  
+    jobs:
+      - job: 
+        steps:
+        - task: TerraformInstaller@1
+          inputs:
+            terraformVersion: 'latest'
+        - task: TerraformTaskV4@4
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/env/dev'
+            backendServiceArm: 'pkserviceconection'
+            backendAzureRmResourceGroupName: 'kkp-rg'
+            backendAzureRmStorageAccountName: 'kpstr123'
+            backendAzureRmContainerName: 'kpctr'
+            backendAzureRmKey: 'dev.terraform.tfstate'
+        - task: TerraformTaskV4@4
+          inputs:
+            provider: 'azurerm'
+            command: 'plan'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/env/dev'
+            environmentServiceNameAzureRM: 'pkserviceconection'
+
+
+  - stage: terraformapply
+    displayName: "terraform apply"
+    jobs:
+      - job: "manualapprovaljob"
+        displayName: manualapproval
+        pool: server
+        steps:
+        - task: ManualValidation@1
+          inputs:
+            notifyUsers: 'pk@pk.com'
+            instructions: 'kindly validate and proceed further'
+      - job: terraforminit
+        steps:
+        - task: TerraformTaskV4@4
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/env/dev'
+            backendServiceArm: 'pkserviceconection'
+            backendAzureRmResourceGroupName: 'kkp-rg'
+            backendAzureRmStorageAccountName: 'kpstr123'
+            backendAzureRmContainerName: 'kpctr'
+            backendAzureRmKey: 'dev.terraform.tfstate'
+        - task: TerraformTaskV4@4
+          inputs:
+            provider: 'azurerm'
+            command: 'apply'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/env/dev'
+            commandOptions: '--auto-approve'
+            environmentServiceNameAzureRM: 'pkserviceconection'
     
+      
